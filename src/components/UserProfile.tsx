@@ -9,9 +9,16 @@ import {
 interface UserProfileProps {
   userEmail: string;
   onLogout: () => void;
+  subscriptionPlan: 'basic' | 'control' | 'premium';
+  setSubscriptionPlan: (plan: 'basic' | 'control' | 'premium') => void;
 }
 
-export default function UserProfile({ userEmail, onLogout }: UserProfileProps) {
+export default function UserProfile({ 
+  userEmail, 
+  onLogout, 
+  subscriptionPlan, 
+  setSubscriptionPlan 
+}: UserProfileProps) {
   const [email, setEmail] = useState(userEmail || 'ops@navierapacifico.com');
   const [phone, setPhone] = useState('+51 1 555-0199');
   const [address, setAddress] = useState('Av. Marítima 450, Callao, Peru');
@@ -40,7 +47,7 @@ export default function UserProfile({ userEmail, onLogout }: UserProfileProps) {
             <CompanyLogo className="w-full h-auto" variant="icon" theme="light" />
           </div>
           <div className="absolute -bottom-2.5 -right-2.5 bg-[#41befd] text-[#002b5c] px-2.5 py-0.5 rounded-full text-[10px] font-bold border-2 border-white shadow-sm font-sans uppercase">
-            Socio Premium
+            {subscriptionPlan === 'premium' ? 'Socio Premium' : subscriptionPlan === 'control' ? 'Socio Control' : 'Socio Basic'}
           </div>
         </div>
 
@@ -137,7 +144,6 @@ export default function UserProfile({ userEmail, onLogout }: UserProfileProps) {
                   <p className="font-sans font-bold text-sm text-[#1a1c1e]">{usr.name}</p>
                   <p className="font-sans text-xs text-[#43474f] font-medium">{usr.role}</p>
                 </div>
-
                 <div className="text-[#ebd78c] bg-[#001b3e] p-1.5 rounded-full" title="Operador verificado">
                   <ShieldCheck className="w-3.5 h-3.5" />
                 </div>
@@ -146,37 +152,92 @@ export default function UserProfile({ userEmail, onLogout }: UserProfileProps) {
           </div>
         </div>
 
-        {/* Smart Premium API indicators subscription block (Col-span 5) */}
+        {/* Smart Subscription Selector block (Col-span 5) */}
         <div className="lg:col-span-5 bg-[#001736] text-white rounded-xl p-5 border border-[#eeeef0]/10 shadow-sm flex flex-col justify-between overflow-hidden relative">
           
-          <div className="relative z-10 space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ebd78c]/15 text-[#ebd78c] text-[10px] font-bold uppercase tracking-wider block w-max">
-              ★ Plan de Servicio Premium
-            </span>
-            <h3 className="font-display font-bold text-lg text-white pt-1">Smart Premium Activo</h3>
-            <p className="font-sans text-xs text-[#7594cb] leading-relaxed">
-              Integración automatizada de manifiestos, alertas en tiempo real predictivo de oleaje y monitoreo ilimitado de lancha activo.
+          <div className="relative z-10 space-y-3">
+            <div className="flex justify-between items-center pb-1.5 border-b border-white/10">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#41befd] font-mono">Plan de Servicio Actual</span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md bg-[#ebd78c]/20 text-[#ebd78c] text-[10px] font-bold uppercase tracking-wider">
+                {subscriptionPlan}
+              </span>
+            </div>
+            
+            <h3 className="font-display font-bold text-base text-white">Configurador de Cuenta</h3>
+            <p className="font-sans text-[11px] text-[#7594cb] leading-relaxed">
+              Seleccione un nivel de servicio para configurar instantáneamente los sistemas y permisos activos en esta cuenta.
             </p>
 
-            <div className="space-y-1.5 pt-2 text-xs font-sans text-white/90">
-              <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-[#ebd78c]" />
-                <span>Geolocalización satelital de lanchas</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-[#ebd78c]" />
-                <span>Consola unificada de manifiestos</span>
-              </div>
+            <div className="space-y-2 pt-1 font-sans">
+              {/* Basic switcher option */}
+              <button
+                onClick={() => {
+                  setSubscriptionPlan('basic');
+                  alert('Plan de cuenta cambiado a: Smart Basic (Sistemas esenciales únicamente)');
+                }}
+                className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                  subscriptionPlan === 'basic' 
+                    ? 'bg-white/15 border-[#41befd] text-white font-bold' 
+                    : 'border-white/10 text-white/50 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${subscriptionPlan === 'basic' ? 'bg-[#41befd]' : 'bg-transparent'}`} />
+                  <span className="text-xs">Smart Basic</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-normal px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">Esencial</span>
+              </button>
+
+              {/* Control switcher option */}
+              <button
+                onClick={() => {
+                  setSubscriptionPlan('control');
+                  alert('Plan de cuenta cambiado a: Smart Control (Sistemas intermedios habilitados)');
+                }}
+                className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                  subscriptionPlan === 'control' 
+                    ? 'bg-white/15 border-[#41befd] text-white font-bold' 
+                    : 'border-white/10 text-white/50 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${subscriptionPlan === 'control' ? 'bg-[#41befd]' : 'bg-transparent'}`} />
+                  <span className="text-xs">Smart Control [Recomendado]</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-normal px-1.5 py-0.5 rounded bg-[#008de0]/30 text-[#41befd]">Intermedio</span>
+              </button>
+
+              {/* Premium switcher option */}
+              <button
+                onClick={() => {
+                  setSubscriptionPlan('premium');
+                  alert('Plan de cuenta cambiado a: Smart Premium (Acceso total e ilimitado)');
+                }}
+                className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                  subscriptionPlan === 'premium' 
+                    ? 'bg-white/15 border-[#ebd78c] text-[#ebd78c] font-bold' 
+                    : 'border-white/10 text-white/50 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${subscriptionPlan === 'premium' ? 'bg-[#ebd78c]' : 'bg-transparent'}`} />
+                  <span className="text-xs">Smart Premium</span>
+                </div>
+                <span className="text-[9px] uppercase tracking-normal px-1.5 py-0.5 rounded bg-[#ebd78c]/20 text-[#ebd78c]">Premium</span>
+              </button>
             </div>
           </div>
 
-          <div className="relative z-10 pt-6">
-            <div className="w-full bg-slate-800 rounded-full h-2 mb-2 overflow-hidden">
-              <div className="bg-[#cbdcf6] h-full rounded-full" style={{ width: '85%' }}></div>
+          <div className="relative z-10 pt-4 border-t border-white/5 mt-3">
+            <div className="w-full bg-slate-800 rounded-full h-1.5 mb-1.5 overflow-hidden">
+              <div 
+                className="bg-[#41befd] h-full rounded-full transition-all duration-500" 
+                style={{ width: subscriptionPlan === 'premium' ? '100%' : subscriptionPlan === 'control' ? '65%' : '30%' }}
+              ></div>
             </div>
-            <div className="flex justify-between font-mono text-[10px] text-[#7594cb]">
-              <span>850 / 1000 Llamados API</span>
-              <span>Renovación en 12 días</span>
+            <div className="flex justify-between font-mono text-[9px] text-[#7594cb]">
+              <span>Sistemas habilitados:</span>
+              <span>{subscriptionPlan === 'premium' ? '9 / 9' : subscriptionPlan === 'control' ? '7 / 9' : '4 / 9'}</span>
             </div>
           </div>
 
