@@ -33,9 +33,23 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install NPM Dependencies
+      - name: Inject Capacitor into package.json (Clean Dynamic Approach)
         run: |
-          npm ci || npm install --legacy-peer-deps
+          # Dynamically add Capacitor dependencies to package.json so the runner resolves them natively
+          node -e '
+            const fs = require("fs");
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            pkg.dependencies = pkg.dependencies || {};
+            pkg.dependencies["@capacitor/core"] = "^6.0.0";
+            pkg.dependencies["@capacitor/android"] = "^6.0.0";
+            pkg.devDependencies = pkg.devDependencies || {};
+            pkg.devDependencies["@capacitor/cli"] = "^6.0.0";
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
+          '
+
+      - name: Install NPM Dependencies & Capacitor
+        run: |
+          npm install --legacy-peer-deps
 
       - name: Build React Application (Vite dist)
         run: |
@@ -43,13 +57,10 @@ jobs:
 
       - name: Setup Capacitor and Sync Android Wrapper dynamically
         run: |
-          # 1. Install Capacitor packages locally on the CI runner (using --no-save so it doesn't edit our package.json)
-          npm install @capacitor/core@^6.0.0 @capacitor/cli@^6.0.0 @capacitor/android@^6.0.0 --no-save
-          
-          # 2. Turn off telemetry
+          # Turn off telemetry explicitly
           npx cap telemetry off || true
           
-          # 3. Create capacitor.config.json file dynamically on the runner
+          # Create capacitor.config.json file dynamically on the runner
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "pe.smartlaunch.app",
@@ -61,10 +72,10 @@ jobs:
           }
           EOF
           
-          # 4. Initialize the Android project dynamically on the fly
+          # Initialize Android platform wrapper
           npx cap add android
           
-          # 5. Synchronize live React build assets with the Android package
+          # Synchronize live React built static assets with the Android package
           npx cap sync android
 
       - name: Make Gradle Wrapper Executable
