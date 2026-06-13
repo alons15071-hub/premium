@@ -41,17 +41,30 @@ jobs:
         run: |
           npm run build
 
-      - name: Setup Capacitor and Sync Android Wrapper
+      - name: Setup Capacitor and Sync Android Wrapper dynamically
         run: |
-          # Turn off telemetry explicitly
+          # 1. Install Capacitor packages locally on the CI runner (using --no-save so it doesn't edit our package.json)
+          npm install @capacitor/core@^6.0.0 @capacitor/cli@^6.0.0 @capacitor/android@^6.0.0 --no-save
+          
+          # 2. Turn off telemetry
           npx cap telemetry off || true
           
-          # If the Android folder isn't committed, create it dynamically
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
+          # 3. Create capacitor.config.json file dynamically on the runner
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "pe.smartlaunch.app",
+            "appName": "Smart Launch Services",
+            "webDir": "dist",
+            "server": {
+              "androidScheme": "https"
+            }
+          }
+          EOF
           
-          # Synchronize live React build assets with Android package modules
+          # 4. Initialize the Android project dynamically on the fly
+          npx cap add android
+          
+          # 5. Synchronize live React build assets with the Android package
           npx cap sync android
 
       - name: Make Gradle Wrapper Executable
