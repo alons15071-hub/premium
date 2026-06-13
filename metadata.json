@@ -1,0 +1,6 @@
+{
+  "name": "Smart Launch Services",
+  "description": "Progressive Web App para la gestión, solicitud, seguimiento y cotización de servicios de lancha en los puertos marítimos de Callao, Chancay, Pisco y Paita.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
