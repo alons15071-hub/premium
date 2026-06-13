@@ -25,7 +25,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -47,13 +46,22 @@ jobs:
             fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
           '
 
-      - name: Install NPM Dependencies & Capacitor
+      - name: Install Dependencies
         run: |
+          # Deleting locks on the runner ensures npm install resolves dependencies perfectly without peer conflicts
+          rm -f package-lock.json
           npm install --legacy-peer-deps
 
       - name: Build React Application (Vite dist)
         run: |
           npm run build
+
+      - name: Auto-accept Android SDK Licenses
+        run: |
+          mkdir -p $ANDROID_HOME/licenses
+          echo "24333f8a63b6825ea9c5514f83d2829b004d1fee" > $ANDROID_HOME/licenses/android-sdk-license
+          echo "84831b94096e23f8ec3581ef124780afe3796b53" > $ANDROID_HOME/licenses/android-sdk-preview-license
+          echo "89cb7ade46b18533b35502b82a12267720942e40" >> $ANDROID_HOME/licenses/android-sdk-license
 
       - name: Setup Capacitor and Sync Android Wrapper dynamically
         run: |
