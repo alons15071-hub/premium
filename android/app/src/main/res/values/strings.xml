@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Smart Launch Services</string>
+    <string name="title_activity_main">Smart Launch Services</string>
+    <string name="package_name">pe.smartlaunch.app</string>
+    <string name="custom_url_scheme">pe.smartlaunch.app</string>
+</resources>

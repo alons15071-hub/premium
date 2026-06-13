@@ -1,0 +1,22 @@
+{
+  "short_name": "SmartLaunch",
+  "name": "Smart Launch Services",
+  "description": "Sistema Digital de Gestión y Solicitud de Lanchas Marítimas",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/192/000000/anchor.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/000000/anchor.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#001736",
+  "theme_color": "#001736",
+  "display": "standalone",
+  "orientation": "portrait"
+}
