@@ -7,6 +7,10 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
 
+env:
+  CAPACITOR_TELEMETRY_DISABLED: 1
+  CI: true
+
 jobs:
   build-apk:
     name: Build & Compile Android APK
@@ -16,6 +20,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,7 +35,7 @@ jobs:
 
       - name: Install NPM Dependencies
         run: |
-          npm ci || npm install
+          npm ci || npm install --legacy-peer-deps
 
       - name: Build React Application (Vite dist)
         run: |
@@ -32,27 +43,30 @@ jobs:
 
       - name: Setup Capacitor and Sync Android Wrapper
         run: |
+          # Turn off telemetry explicitly
+          npx cap telemetry off || true
+          
           # If the Android folder isn't committed, create it dynamically
           if [ ! -d "android" ]; then
             npx cap add android
           fi
+          
           # Synchronize live React build assets with Android package modules
           npx cap sync android
 
-      - name: Set up Java JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          cache: 'gradle'
-
       - name: Make Gradle Wrapper Executable
-        run: chmod +x android/gradlew
+        run: |
+          if [ -f "android/gradlew" ]; then
+            chmod +x android/gradlew
+          else
+            echo "Error: android/gradlew not found!"
+            exit 1
+          fi
 
       - name: Build Android App with Gradle (Debug APK)
         run: |
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Archive and Upload APK Build Artifact
         uses: actions/upload-artifact@v4
