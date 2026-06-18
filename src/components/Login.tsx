@@ -20,6 +20,19 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       return;
     }
 
+    const lowerEmail = email.toLowerCase().trim();
+
+    // Validar de forma estricta que corresponda a una de las tres empresas marítimas
+    const isValidUser = 
+      (lowerEmail === 'operaciones@maritima-callao.com' && password === 'basic123') ||
+      (lowerEmail === 'control@navierapacifico.com' && password === 'control123') ||
+      (lowerEmail === 'gerencia@oceanic-del-sur.com' && password === 'premium123');
+
+    if (!isValidUser) {
+      setMessage('Correo o clave equivocada');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -141,7 +154,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       </form>
 
       {/* Footer Registration Request */}
-      <footer className="mt-8 pt-5 border-t border-[#c4c6d0] text-center">
+      <footer className="mt-6 pt-4 border-t border-[#c4c6d0] text-center">
         <span className="text-xs text-[#43474f] block mb-1">¿No tienes credenciales activas?</span>
         <button
           onClick={() => setMessage('Solicitud de acceso enviada al Administrador de Operaciones Portuarias.')}

@@ -53,6 +53,15 @@ export default function App() {
     setUserEmail(email);
     setUserLoggedIn(true);
     setActiveScreen('dashboard');
+
+    const lowerEmail = email.toLowerCase().trim();
+    if (lowerEmail === 'operaciones@maritima-callao.com') {
+      setSubscriptionPlan('basic');
+    } else if (lowerEmail === 'control@navierapacifico.com') {
+      setSubscriptionPlan('control');
+    } else if (lowerEmail === 'gerencia@oceanic-del-sur.com') {
+      setSubscriptionPlan('premium');
+    }
   };
 
   const handleLogout = () => {

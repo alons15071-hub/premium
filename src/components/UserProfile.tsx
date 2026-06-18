@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { AUTHORIZED_USERS } from '../data';
+import { useState, useEffect } from 'react';
 import CompanyLogo from './CompanyLogo';
 import { 
   Anchor, Mail, MapPin, User, LogOut, Check, Save, Settings, 
@@ -19,9 +18,95 @@ export default function UserProfile({
   subscriptionPlan, 
   setSubscriptionPlan 
 }: UserProfileProps) {
-  const [email, setEmail] = useState(userEmail || 'ops@navierapacifico.com');
-  const [phone, setPhone] = useState('+51 1 555-0199');
-  const [address, setAddress] = useState('Av. Marítima 450, Callao, Peru');
+  const getCompanyDetails = (emailStr: string) => {
+    const lower = (emailStr || '').toLowerCase().trim();
+    if (lower === 'operaciones@maritima-callao.com') {
+      return {
+        name: 'Marítima Callao S.A.',
+        phone: '+51 1 614-1000',
+        address: 'Av. Contralmirante Raygada 110, Callao, Perú',
+        description: 'Terminal & Harbor Logistic Operations',
+        authorizedUsers: [
+          {
+            initials: 'CB',
+            name: 'Carlos Benavides',
+            role: 'Jefe de Operaciones de Bahía • Admin Principal'
+          },
+          {
+            initials: 'ER',
+            name: 'Elena Rostrán',
+            role: 'Supervisora de Abastecimiento de Lanchas'
+          },
+          {
+            initials: 'MP',
+            name: 'Miguel Ángel Prado',
+            role: 'Controlador de Tráfico Marítimo'
+          }
+        ]
+      };
+    }
+    if (lower === 'gerencia@oceanic-del-sur.com') {
+      return {
+        name: 'Oceanic del Sur S.A.',
+        phone: '+51 1 710-8000',
+        address: 'Malecón de la Marina 210, Miraflores, Lima, Perú',
+        description: 'Deep-Sea Fleet & Continental Logistics Command',
+        authorizedUsers: [
+          {
+            initials: 'FS',
+            name: 'Alm. Federico Soler',
+            role: 'Director Ejecutivo de Flota & Logística • Admin'
+          },
+          {
+            initials: 'DG',
+            name: 'Diana de la Guerra',
+            role: 'Gerente General de Logística Internacional'
+          },
+          {
+            initials: 'AB',
+            name: 'Ing. Arturo Beltrán',
+            role: 'Superintendente de Monitoreo Analítico y KPI'
+          }
+        ]
+      };
+    }
+    return {
+      name: 'Naviera Pacífico S.A.',
+      phone: '+51 1 555-0199',
+      address: 'Av. Marítima 450, Callao, Peru',
+      description: 'Callao Port Operations & Logistics Hub',
+      authorizedUsers: [
+        {
+          initials: 'RC',
+          name: 'Ricardo Castillo',
+          role: 'Fleet Manager • Administrador de Cuenta'
+        },
+        {
+          initials: 'AM',
+          name: 'Ana Martínez',
+          role: 'Coordinadora Senior de Logística y Despacho'
+        },
+        {
+          initials: 'JP',
+          name: 'Jorge Pizarro',
+          role: 'Despachador Marítimo y Oficial de Enlace'
+        }
+      ]
+    };
+  };
+
+  const currentCompany = getCompanyDetails(userEmail);
+
+  const [email, setEmail] = useState(userEmail || 'control@navierapacifico.com');
+  const [phone, setPhone] = useState(currentCompany.phone);
+  const [address, setAddress] = useState(currentCompany.address);
+
+  useEffect(() => {
+    const fresh = getCompanyDetails(userEmail);
+    setEmail(userEmail || 'control@navierapacifico.com');
+    setPhone(fresh.phone);
+    setAddress(fresh.address);
+  }, [userEmail]);
   
   // Notification preference switches states
   const [notifyDocking, setNotifyDocking] = useState(true);
@@ -54,10 +139,10 @@ export default function UserProfile({
         {/* Company specs */}
         <div className="flex-grow space-y-2 min-w-0">
           <h1 className="font-display font-bold text-xl sm:text-2xl text-[#001736] tracking-tight truncate">
-            Naviera del Pacífico S.A.
+            {currentCompany.name}
           </h1>
           <p className="text-[#43474f] font-sans text-xs font-semibold uppercase tracking-wider">
-            Callao Port Operations &amp; Logistics Hub
+            {currentCompany.description}
           </p>
 
           <div className="flex flex-wrap gap-2 pt-1 font-sans text-xs">
@@ -130,7 +215,7 @@ export default function UserProfile({
           </div>
 
           <div className="space-y-2">
-            {AUTHORIZED_USERS.map((usr) => (
+            {currentCompany.authorizedUsers.map((usr) => (
               <div 
                 key={usr.name}
                 className="flex items-center gap-3.5 p-3 hover:bg-[#f3f3f6] rounded-xl transition-all border border-transparent hover:border-[#c4c6d0]/50 group"
